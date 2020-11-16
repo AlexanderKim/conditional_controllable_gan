@@ -17,6 +17,12 @@ def weights_init(m):
 def combine_vectors(x, y):
     return torch.cat((x, y), dim=1).float()
 
+def get_dimensions(noize_dim, image_size, n_classes):
+    generator_input_dim = noize_dim + n_classes
+    discriminator_input_dim = image_size + n_classes
+    return generator_input_dim, discriminator_input_dim
+
+
 class ConditionalGAN(pl.LightningModule):
     def __init__(self, generator: Generator, discriminator: Discriminator):
         super().__init__()
@@ -92,3 +98,4 @@ class ConditionalGAN(pl.LightningModule):
         fake_pred = self.generator(noise)
         img_grid = torchvision.utils.make_grid(fake_pred)
         self.logger.experiment.add_image('generated_images', img_grid, self.current_epoch)
+
