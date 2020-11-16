@@ -34,6 +34,6 @@ class Generator(nn.Module):
         noize = noize.view(len(noize), self.noize_dim, 1, 1)
         return self.gen(noize)
 
-    def gen_noize(self, n_samples=128, device='cuda'):
-        return torch.randn(n_samples, self.noize_dim, device=device)
+    def gen_noize(self, n_samples=128, noize_dim=10, device='cuda'):
+        return torch.randn(n_samples, noize_dim, device=device)
 

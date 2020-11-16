@@ -24,11 +24,13 @@ def get_dimensions(noize_dim, image_size, n_classes):
 
 
 class ConditionalGAN(pl.LightningModule):
-    def __init__(self, generator: Generator, discriminator: Discriminator):
+    def __init__(self, generator: Generator, discriminator: Discriminator, noize_dim=10):
         super().__init__()
         self.generator = generator.apply(weights_init)
         self.discriminator = discriminator.apply(weights_init)
         self.criterion = torch.nn.BCEWithLogitsLoss()
+
+        self.noize_dim = noize_dim
 
     def forward(self, noise):
         return self.generator(noise)
@@ -37,7 +39,7 @@ class ConditionalGAN(pl.LightningModule):
         print("one_hot_labels: ", one_hot_labels.size())
         print("image_one_hot_labels: ", image_one_hot_labels.size())
 
-        noise = self.generator.gen_noize(len(real), device=self.device)
+        noise = self.generator.gen_noize(len(real), noize_dim=self.noize_dim, device=self.device)
         print("noise: ", noise.size())
 
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
@@ -55,7 +57,7 @@ class ConditionalGAN(pl.LightningModule):
         return gen_loss
 
     def train_disc(self, real, one_hot_labels, image_one_hot_labels):
-        noise = self.generator.gen_noize(len(real), device=self.device)
+        noise = self.generator.gen_noize(len(real), noize_dim=self.noize_dim, device=self.device)
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
         fake = self.generator(noise_and_labels).detach()
         fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
