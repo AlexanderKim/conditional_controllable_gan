@@ -64,6 +64,7 @@ class ConditionalGAN(pl.LightningModule):
         optimizer = self.optimizers()[optimizer_idx]
 
         one_hot_labels = labels
+        print(one_hot_labels.size())
         image_one_hot_labels = one_hot_labels[:, :, None, None]
         image_one_hot_labels = image_one_hot_labels.repeat(1, 1, 64, 64)
 
