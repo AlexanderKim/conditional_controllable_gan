@@ -39,7 +39,7 @@ class ConditionalGAN(pl.LightningModule):
 
         return gen_loss
 
-    def train_disc(self, real, labels, one_hot_labels, image_one_hot_labels):
+    def train_disc(self, real, one_hot_labels, image_one_hot_labels):
         noise = self.generator(self.generator.gen_noize(len(real), device=self.device))
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
         fake = self.generator(noise_and_labels).detach()
@@ -70,7 +70,7 @@ class ConditionalGAN(pl.LightningModule):
         if optimizer_idx == 0:
             return self.train_gen(real, one_hot_labels, image_one_hot_labels)
         if optimizer_idx == 1:
-            return self.train_disc(real, labels)
+            return self.train_disc(real, one_hot_labels, image_one_hot_labels)
 
     def configure_optimizers(self):
         opt_gen = torch.optim.Adam(self.generator.parameters(), lr=0.0002, betas=(0.5, 0.999))
