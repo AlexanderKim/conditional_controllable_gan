@@ -29,6 +29,11 @@ class ConditionalGAN(pl.LightningModule):
 
     def train_gen(self, real, one_hot_labels, image_one_hot_labels):
         noise = self.generator.gen_noize(len(real), device=self.device)
+
+        print(noise.size())
+        print(one_hot_labels.size())
+        print(one_hot_labels.float().size())
+
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
 
         fake_pred = self.generator(noise)
