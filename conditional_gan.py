@@ -58,7 +58,7 @@ class ConditionalGAN(pl.LightningModule):
         fake_pred = self.discriminator(fake_images_and_labels)
         print("fake_pred: ", fake_pred.size())
 
-        gen_loss = self.criterion(fake_pred, torch.ones_like(fake_images_and_labels))
+        gen_loss = self.criterion(fake_pred, torch.ones_like(fake_pred))
         self.log_dict({'gen_loss': gen_loss})
 
         return gen_loss
