@@ -31,7 +31,7 @@ class ConditionalGAN(pl.LightningModule):
         noise = self.generator.gen_noize(len(real), device=self.device)
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
 
-        fake_pred = self.generator(noise)
+        fake_pred = self.generator(noise_and_labels)
         fake_images_and_labels = combine_vectors(fake_pred, image_one_hot_labels)
 
         gen_loss = self.criterion(fake_images_and_labels, torch.ones_like(fake_images_and_labels))
