@@ -39,55 +39,24 @@ class ConditionalGAN(pl.LightningModule):
 
     def train_gen(self, real, one_hot_labels, image_one_hot_labels):
 
-        print("------------------------------------------------")
-        print("Gen")
-
-        print("one_hot_labels: ", one_hot_labels.size())
-        print("image_one_hot_labels: ", image_one_hot_labels.size())
-
         noise = self.generator.gen_noize(len(real), noize_dim=self.noize_dim, device=self.device)
-        print("noise: ", noise.size())
-
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
-        print("noise_and_labels: ", noise_and_labels.size())
-
         fake = self.generator(noise_and_labels)
-        print("fake: ", fake.size())
-
         fake_images_and_labels = combine_vectors(fake, image_one_hot_labels)
-        print("fake_images_and_labels: ", fake_images_and_labels.size())
-
         fake_pred = self.discriminator(fake_images_and_labels)
-        print("fake_pred: ", fake_pred.size())
-
         gen_loss = self.criterion(fake_pred, torch.ones_like(fake_pred))
         self.log_dict({'gen_loss': gen_loss})
 
         return gen_loss
 
     def train_disc(self, real, one_hot_labels, image_one_hot_labels):
-        print("------------------------------------------------")
-        print("Disc")
-
-        print("one_hot_labels: ", one_hot_labels.size())
-        print("image_one_hot_labels: ", image_one_hot_labels.size())
-
         noise = self.generator.gen_noize(len(real), noize_dim=self.noize_dim, device=self.device)
-        print("noise: ", noise.size())
-
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
-        print("noise_and_labels: ", noise_and_labels.size())
-
         fake = self.generator(noise_and_labels).detach()
-        print("fake: ", fake.size())
         self.last_fake = fake
 
         fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
-        print("fake_image_and_labels: ", fake_image_and_labels.size())
-
         real_image_and_labels = combine_vectors(real, image_one_hot_labels)
-        print("real_image_and_labels: ", real_image_and_labels.size())
-
         fake_pred = self.discriminator(fake_image_and_labels)
         real_pred = self.discriminator(real_image_and_labels)
 
