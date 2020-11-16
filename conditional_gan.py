@@ -6,6 +6,7 @@ import pytorch_lightning as pl
 from discriminator import Discriminator
 from generator import Generator
 
+
 def weights_init(m):
     if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
         torch.nn.init.normal_(m.weight, 0.0, 0.02)
@@ -13,7 +14,10 @@ def weights_init(m):
         torch.nn.init.normal_(m.weight, 0.0, 0.02)
         torch.nn.init.constant_(m.bias, 0)
 
-class ControllableGAN(pl.LightningModule):
+def combine_vectors(x, y):
+    return torch.cat((x, y), dim=1).float()
+
+class ConditionalGAN(pl.LightningModule):
     def __init__(self, generator: Generator, discriminator: Discriminator):
         super().__init__()
         self.generator = generator.apply(weights_init)
@@ -25,10 +29,10 @@ class ControllableGAN(pl.LightningModule):
 
     def train_gen(self, real, one_hot_labels, image_one_hot_labels):
         noise = self.generator.gen_noize(len(real), device=self.device)
-        noise_and_labels = torch.cat(noise, one_hot_labels.float())
+        noise_and_labels = combine_vectors(noise, one_hot_labels.float())
 
         fake_pred = self.generator(noise)
-        fake_images_and_labels = torch.cat(fake_pred, image_one_hot_labels)
+        fake_images_and_labels = combine_vectors(fake_pred, image_one_hot_labels)
 
         gen_loss = self.criterion(fake_images_and_labels, torch.ones_like(fake_images_and_labels))
         self.log({'gen_loss': gen_loss})
@@ -37,11 +41,11 @@ class ControllableGAN(pl.LightningModule):
 
     def train_disc(self, real, labels, one_hot_labels, image_one_hot_labels):
         noise = self.generator(self.generator.gen_noize(len(real), device=self.device))
-        noise_and_labels = torch.cat(noise, one_hot_labels.float())
+        noise_and_labels = combine_vectors(noise, one_hot_labels.float())
         fake = self.generator(noise_and_labels).detach()
-        fake_image_and_labels = torch.cat(fake, image_one_hot_labels)
+        fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
 
-        real_image_and_labels = torch.cat(real, image_one_hot_labels)
+        real_image_and_labels = combine_vectors(real, image_one_hot_labels)
 
         fake_pred = self.generator(fake_image_and_labels)
         real_pred = self.generator(real_image_and_labels)
@@ -59,7 +63,7 @@ class ControllableGAN(pl.LightningModule):
         real, labels = batch
         optimizer = self.optimizers()[optimizer_idx]
 
-        one_hot_labels = torch.nn.functional.one_hot(labels, len(labels))
+        one_hot_labels = labels
         image_one_hot_labels = one_hot_labels[:, :, None, None]
         image_one_hot_labels = image_one_hot_labels.repeat(1, 1, 64, 64)
 
@@ -79,7 +83,3 @@ class ControllableGAN(pl.LightningModule):
         fake_pred = self.generator(noise)
         img_grid = torchvision.utils.make_grid(fake_pred)
         self.logger.experiment.add_image('generated_images', img_grid, self.current_epoch)
-
-
-
-
