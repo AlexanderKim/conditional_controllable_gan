@@ -49,13 +49,16 @@ class ConditionalGAN(pl.LightningModule):
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
         print("noise_and_labels: ", noise_and_labels.size())
 
-        fake_pred = self.generator(noise_and_labels)
-        print("fake_pred: ", fake_pred.size())
+        fake = self.generator(noise_and_labels)
+        print("fake: ", fake.size())
 
-        fake_images_and_labels = combine_vectors(fake_pred, image_one_hot_labels)
+        fake_images_and_labels = combine_vectors(fake, image_one_hot_labels)
         print("fake_images_and_labels: ", fake_images_and_labels.size())
 
-        gen_loss = self.criterion(fake_images_and_labels, torch.ones_like(fake_images_and_labels))
+        fake_pred = self.discriminator(fake_images_and_labels)
+        print("fake_pred: ", fake_pred.size())
+
+        gen_loss = self.criterion(fake_pred, torch.ones_like(fake_images_and_labels))
         self.log_dict({'gen_loss': gen_loss})
 
         return gen_loss
@@ -82,8 +85,8 @@ class ConditionalGAN(pl.LightningModule):
         real_image_and_labels = combine_vectors(real, image_one_hot_labels)
         print("real_image_and_labels: ", real_image_and_labels.size())
 
-        fake_pred = self.generator(fake_image_and_labels)
-        real_pred = self.generator(real_image_and_labels)
+        fake_pred = self.discriminator(fake_image_and_labels)
+        real_pred = self.discriminator(real_image_and_labels)
 
         fake_loss = self.criterion(fake_pred, torch.zeros_like(fake_pred))
         real_loss = self.criterion(real_pred, torch.ones_like(real_pred))
