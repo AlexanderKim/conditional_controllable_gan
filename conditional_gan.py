@@ -32,6 +32,8 @@ class ConditionalGAN(pl.LightningModule):
 
         self.noize_dim = noize_dim
 
+        self.last_fake = None
+
     def forward(self, noise):
         return self.generator(noise)
 
@@ -78,6 +80,7 @@ class ConditionalGAN(pl.LightningModule):
 
         fake = self.generator(noise_and_labels).detach()
         print("fake: ", fake.size())
+        self.last_fake = fake
 
         fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
         print("fake_image_and_labels: ", fake_image_and_labels.size())
@@ -117,8 +120,6 @@ class ConditionalGAN(pl.LightningModule):
         return [opt_gen, opt_disc], []
 
     def on_epoch_end(self) -> None:
-        noise = self.generator.gen_noize(device=self.device)
-        fake_pred = self.generator(noise)
-        img_grid = torchvision.utils.make_grid(fake_pred)
+        img_grid = torchvision.utils.make_grid(self.last_fake)
         self.logger.experiment.add_image('generated_images', img_grid, self.current_epoch)
 
