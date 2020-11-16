@@ -35,7 +35,7 @@ class ConditionalGAN(pl.LightningModule):
         fake_images_and_labels = combine_vectors(fake_pred, image_one_hot_labels)
 
         gen_loss = self.criterion(fake_images_and_labels, torch.ones_like(fake_images_and_labels))
-        self.log({'gen_loss': gen_loss})
+        self.log_dict({'gen_loss': gen_loss})
 
         return gen_loss
 
@@ -54,7 +54,7 @@ class ConditionalGAN(pl.LightningModule):
         real_loss = self.criterion(real_pred, torch.ones_like(real_pred))
 
         disc_loss = (fake_loss + real_loss) / 2
-        self.log({'disc_loss': disc_loss})
+        self.log_dict({'disc_loss': disc_loss})
 
         return disc_loss
 
