@@ -28,11 +28,20 @@ class ConditionalGAN(pl.LightningModule):
         return self.generator(noise)
 
     def train_gen(self, real, one_hot_labels, image_one_hot_labels):
+        print("one_hot_labels: ", one_hot_labels.size())
+        print("image_one_hot_labels: ", image_one_hot_labels.size())
+
         noise = self.generator.gen_noize(len(real), device=self.device)
+        print("noise: ", noise.size())
+
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
+        print("noise_and_labels: ", noise_and_labels.size())
 
         fake_pred = self.generator(noise_and_labels)
+        print("fake_pred: ", fake_pred.size())
+
         fake_images_and_labels = combine_vectors(fake_pred, image_one_hot_labels)
+        print("fake_images_and_labels: ", fake_images_and_labels.size())
 
         gen_loss = self.criterion(fake_images_and_labels, torch.ones_like(fake_images_and_labels))
         self.log_dict({'gen_loss': gen_loss})
