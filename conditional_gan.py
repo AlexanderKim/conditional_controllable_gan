@@ -40,7 +40,7 @@ class ConditionalGAN(pl.LightningModule):
         return gen_loss
 
     def train_disc(self, real, one_hot_labels, image_one_hot_labels):
-        noise = self.generator(self.generator.gen_noize(len(real), device=self.device))
+        noise = self.generator.gen_noize(len(real), device=self.device)
         noise_and_labels = combine_vectors(noise, one_hot_labels.float())
         fake = self.generator(noise_and_labels).detach()
         fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
