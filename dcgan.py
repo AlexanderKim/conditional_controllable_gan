@@ -32,7 +32,7 @@ class DCGAN(pl.LightningModule):
             return self.train_disc(real)
 
     def train_gen(self, real):
-        noise = self.gen.gen_noize(n_samples=len(real))
+        noise = self.gen.gen_noize(n_samples=len(real), device=self.device)
         fake = self.gen(noise)
         pred = self.disc(fake)
 
@@ -42,7 +42,7 @@ class DCGAN(pl.LightningModule):
         return gen_loss
 
     def train_disc(self, real):
-        noise = self.gen.gen_noize(n_samples=len(real))
+        noise = self.gen.gen_noize(n_samples=len(real), device=self.device)
         fake = self.gen(noise).detach()
         fake_pred = self.disc(fake)
         disc_gen_loss = self.criterion(fake_pred, torch.zeros_like(fake_pred))
