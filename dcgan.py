@@ -58,5 +58,5 @@ class DCGAN(pl.LightningModule):
     def on_epoch_end(self) -> None:
         fake = self.gen(self.gen.gen_noize())
 
-        img_grid = torchvision.utils.make_grid(self.last_fake)
+        img_grid = torchvision.utils.make_grid(fake)
         self.logger.experiment.add_image('generated_images', img_grid, self.current_epoch)
