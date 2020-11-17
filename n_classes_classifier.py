@@ -18,7 +18,11 @@ class NClassesClassifier(pl.LightningModule):
         real, labels = batch
 
         prediction = self.disc(real)
-        loss = self.criterion(prediction, labels)
+
+        prediction_size = prediction.size()
+        reshaped_prediction = prediction.view(prediction_size[0], prediction_size[1])
+
+        loss = self.criterion(reshaped_prediction, labels)
 
         self.log_dict({"loss": loss})
 
