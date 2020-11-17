@@ -22,7 +22,7 @@ class NClassesClassifier(pl.LightningModule):
         prediction_size = prediction.size()
         reshaped_prediction = prediction.view(prediction_size[0], prediction_size[1])
 
-        loss = self.criterion(reshaped_prediction, labels)
+        loss = self.criterion(reshaped_prediction, labels.float())
 
         self.log_dict({"loss": loss})
 
