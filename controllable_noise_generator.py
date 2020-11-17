@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 import torch
 
 from generator import Generator
