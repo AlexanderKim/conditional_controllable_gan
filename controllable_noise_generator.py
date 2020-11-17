@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from typing import List
 
 import torch
 
@@ -39,14 +39,14 @@ class ContorllableNoiseGenerator(object):
         return target_score + other_class_penalty
 
     def generate_noise(self,
-                       target_indices: list[int],
-                       other_indices: list[int],
+                       target_indices: List[int],
+                       other_indices: List[int],
                        n_images: int,
                        grad_steps: int = 10):
         noise = self.generator.gen_noize(n_images)
         original_classifications = self.classifier(self.generator(noise))
 
-        fake_history: list[torch.Tensor] = []
+        fake_history: List[torch.Tensor] = []
 
         for _ in range(grad_steps):
             self.optimizer.zero_grad()
