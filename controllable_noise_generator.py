@@ -44,7 +44,7 @@ class ContorllableNoiseGenerator(object):
                        n_images: int,
                        grad_steps: int = 10,
                        device='cuda'):
-        noise = self.generator.gen_noize(n_images, device=device)
+        noise = self.generator.gen_noize(n_images, device=device).requires_grad_()
         original_classifications = self.classifier(self.generator(noise))
 
         fake_history: List[torch.Tensor] = []
