@@ -23,3 +23,7 @@ class NClassesClassifier(pl.LightningModule):
         self.log_dict({"loss": loss})
 
         return loss
+
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.disc.parameters(), lr=3e-4, betas=(0.5, 0.999))
+
