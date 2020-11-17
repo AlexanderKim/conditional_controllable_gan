@@ -14,7 +14,7 @@ class NClassesClassifier(pl.LightningModule):
     def forward(self, x):
         return self.disc(x)
 
-    def training_step(self, batch, batch_idx, optimizer_idx):
+    def training_step(self, batch, batch_idx):
         real, labels = batch
 
         prediction = self.disc(real)
