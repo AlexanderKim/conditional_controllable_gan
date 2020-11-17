@@ -62,7 +62,7 @@ class ContorllableNoiseGenerator(object):
                 penalty_weight=0.1
             )
 
-            fake_score.backward()
+            fake_score.backward(retain_graph=True)
             noise.data = self._calculate_updated_noise(noise, 1 / grad_steps)
 
         return noise, fake_history
