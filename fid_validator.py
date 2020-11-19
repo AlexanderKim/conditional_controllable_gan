@@ -41,11 +41,11 @@ class FIDValidator(object):
         real_features_list = []
         fake_features_list = []
 
-        real_features = self.inception_model(real)
+        real_features = self.inception_model(real).detach().to('cpu')
         real_features_list.append(real_features)
 
         fake_preprocessed = preprocess(fake)
-        fake_features = self.inception_model(fake_preprocessed)
+        fake_features = self.inception_model(fake_preprocessed).detach().to('cpu')
         fake_features_list.append(fake_features)
 
         real_features_list_cat = torch.cat(real_features_list)
