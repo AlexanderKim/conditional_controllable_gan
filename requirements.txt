@@ -4,3 +4,4 @@ tqdm
 numpy
 matplotlib
 pytorch-lightning
+scipy

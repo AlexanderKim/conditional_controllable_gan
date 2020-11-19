@@ -1,3 +1,5 @@
+from typing import Union, List
+
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 from torchvision.datasets.celeba import CelebA
@@ -18,8 +20,21 @@ class CelebADataModule(pl.LightningDataModule):
         ])
 
     def prepare_data(self):
-        self.dataset = CelebA(root="data", download=True, transform=self.transforms)
+        self.train_dataset = CelebA(root="data", split="train", download=True, transform=self.transforms)
+        self.valid_dataset = CelebA(root="data", split="valid", download=True, transform=self.transforms)
+        self.test_dataset = CelebA(root="data", split="test", download=True, transform=self.transforms)
 
     def train_dataloader(self) -> DataLoader:
-        return DataLoader(dataset=self.dataset, batch_size=self.batch_size)
+        return DataLoader(dataset=self.train_dataset, batch_size=self.batch_size)
+
+    def val_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
+        return DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size)
+
+    def test_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
+        return DataLoader(dataset=self.test_dataset, batch_size=self.batch_size)
+
+
+
+
+
 
