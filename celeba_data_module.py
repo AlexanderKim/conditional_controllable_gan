@@ -28,7 +28,7 @@ class CelebADataModule(pl.LightningDataModule):
         return DataLoader(dataset=self.train_dataset, batch_size=self.batch_size)
 
     def val_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
-        return DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size)
+        return DataLoader(dataset=self.valid_dataset, batch_size=10)
 
     def test_dataloader(self) -> Union[DataLoader, List[DataLoader]]:
         return DataLoader(dataset=self.test_dataset, batch_size=self.batch_size)

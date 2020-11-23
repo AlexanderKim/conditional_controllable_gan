@@ -7,12 +7,14 @@ from generator import Generator
 
 
 class DCGAN(pl.LightningModule):
-    def __init__(self, generator: Generator, discriminator: Discriminator):
+    def __init__(self, generator: Generator, discriminator: Discriminator, fid_validator=None):
         super().__init__()
 
         self.gen = generator
         self.disc = discriminator
         self.criterion = torch.nn.BCEWithLogitsLoss()
+
+        self.fid_validator = fid_validator
 
     def forward(self, noise):
         return self.gen(noise)
@@ -60,3 +62,17 @@ class DCGAN(pl.LightningModule):
 
         img_grid = torchvision.utils.make_grid(fake)
         self.logger.experiment.add_image('generated_images', img_grid, self.current_epoch)
+
+    def validation_step(self, batch, batch_idx):
+
+        if not self.fid_validator:
+            return 0
+
+        real, labels = batch
+
+        noise = self.gen.gen_noize(n_samples=10, device=trained_gen.device)
+        fake = self.gen(noise)
+
+        fid = self.fid_validator.validate(fake.to('cuda'), preprocess(real.to('cuda')))
+
+        self.log_dict({"fid": fid})
