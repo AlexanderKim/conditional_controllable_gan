@@ -41,7 +41,8 @@ class FIDValidator(object):
         real_features_list = []
         fake_features_list = []
 
-        real_features = self.inception_model(real).detach().to('cpu')
+        real_preprocessed = preprocess(real)
+        real_features = self.inception_model(real_preprocessed).detach().to('cpu')
         real_features_list.append(real_features)
 
         fake_preprocessed = preprocess(fake)

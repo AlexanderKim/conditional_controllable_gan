@@ -5,9 +5,15 @@ import torchvision
 from discriminator import Discriminator
 from generator import Generator
 
+from fid_validator import FIDValidator
+
 
 class DCGAN(pl.LightningModule):
-    def __init__(self, generator: Generator, discriminator: Discriminator, fid_validator=None):
+    def __init__(self,
+                 generator: Generator,
+                 discriminator: Discriminator,
+                 fid_validator: FIDValidator = None):
+
         super().__init__()
 
         self.gen = generator
@@ -70,9 +76,9 @@ class DCGAN(pl.LightningModule):
 
         real, labels = batch
 
-        noise = self.gen.gen_noize(n_samples=10, device=trained_gen.device)
+        noise = self.gen.gen_noize(n_samples=10, device=self.device)
         fake = self.gen(noise)
 
-        fid = self.fid_validator.validate(fake.to('cuda'), preprocess(real.to('cuda')))
+        fid = self.fid_validator.validate(fake.to('cuda'), real.to('cuda'))
 
         self.log_dict({"fid": fid})
